@@ -1,0 +1,7 @@
+CREATE TABLE oembed (
+       url TEXT PRIMARY KEY,
+       object_uri TEXT,
+       body TEXT
+);
+
+CREATE INDEX `by_object` ON oembed (`object_uri`);
