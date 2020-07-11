@@ -11,6 +11,8 @@ This is work in progress.
 ```
 $> sqlite3 metmuseum.db < schema/sqlite/oembed.sqlite
 
+# as in: https://github.com/aaronland/go-metmuseum-openaccess#emit
+
 $> /usr/local/go-metmuseum-openaccess/bin/emit \
 	-oembed \
 	-oembed-ensure-images \
