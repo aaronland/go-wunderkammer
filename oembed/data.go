@@ -10,7 +10,23 @@ import (
 
 func DataURL(ctx context.Context, url string) (string, error) {
 
-	rsp, err := http.Get(url)
+	select {
+	case <-ctx.Done():
+		return "", nil
+	default:
+		// pass
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+
+	if err != nil {
+		return "", err
+	}
+
+	// make this a singleton?
+	cl := &http.Client{}
+
+	rsp, err := cl.Do(req)
 
 	if err != nil {
 		return "", err
