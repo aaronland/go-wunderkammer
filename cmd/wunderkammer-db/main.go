@@ -19,6 +19,7 @@ import (
 func main() {
 
 	dsn := flag.String("database-dsn", "sql://sqlite3/oembed.db", "...")
+	populate_data_url := flag.Bool("populate-data-url", false, "")
 	flag.Parse()
 
 	ctx := context.Background()
@@ -60,6 +61,17 @@ func main() {
 
 		if err != nil {
 			log.Fatalf("Failed to unmarshal OEmbed record, %v", err)
+		}
+
+		if *populate_data_url && rec.DataURL == "" {
+
+			data_url, err := oembed.DataURL(ctx, rec.URL)
+
+			if err != nil {
+				log.Fatalf("Failed to populate data URL for '%s', %v", rec.URL, err)
+			}
+
+			rec.DataURL = data_url
 		}
 
 		err = db.AddOEmbed(ctx, rec)
