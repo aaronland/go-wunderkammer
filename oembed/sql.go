@@ -46,7 +46,7 @@ func (db *SQLOEmbedDatabase) Close() error {
 	return db.conn.Close()
 }
 
-func (db *SQLOEmbedDatabase) AddOEmbed(ctx context.Context, rec *OEmbedRecord) error {
+func (db *SQLOEmbedDatabase) AddOEmbed(ctx context.Context, rec *Photo) error {
 
 	body, err := json.Marshal(rec)
 
@@ -75,7 +75,7 @@ func (db *SQLOEmbedDatabase) AddOEmbed(ctx context.Context, rec *OEmbedRecord) e
 	return tx.Commit()
 }
 
-func (db *SQLOEmbedDatabase) GetRandomOEmbed(ctx context.Context) (*OEmbedRecord, error) {
+func (db *SQLOEmbedDatabase) GetRandomOEmbed(ctx context.Context) (*Photo, error) {
 
 	q := "SELECT body FROM oembed ORDER BY RANDOM() LIMIT 1"
 
@@ -89,7 +89,7 @@ func (db *SQLOEmbedDatabase) GetRandomOEmbed(ctx context.Context) (*OEmbedRecord
 		return nil, err
 	}
 
-	var rec *OEmbedRecord
+	var rec *Photo
 
 	err = json.Unmarshal(body, &rec)
 

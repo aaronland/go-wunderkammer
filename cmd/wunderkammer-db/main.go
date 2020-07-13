@@ -54,7 +54,7 @@ func main() {
 
 		body = bytes.TrimSpace(body)
 
-		var rec *oembed.OEmbedRecord
+		var rec *oembed.Photo
 
 		err = json.Unmarshal(body, &rec)
 
