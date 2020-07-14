@@ -143,7 +143,7 @@ For example: `sql://sqlite3/usr/local/oembed.db`
 
 ###### sql
 
-Index records with any valid Go language `database/sql` driver assuming its been imported by your code. Currently the only default driver that is included is [mattn/go-sqlite3](https://github.com/mattn/go-sqlite3).
+Index records with any valid Go language `database/sql` driver assuming its been imported by your code. Currently the only default driver that is included is the [mattn/go-sqlite3](https://github.com/mattn/go-sqlite3) `sqlite3` driver.
 
 ## See also
 
