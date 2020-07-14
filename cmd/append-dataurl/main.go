@@ -12,26 +12,32 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"runtime"
+	"sync"
 	"sync/atomic"
+	"time"
 )
 
 func main() {
 
-	content_aware_resize := flag.Bool("content-aware-resize", false, "...")
-	content_aware_height := flag.Int("content-aware-height", 0, "...")
-	content_aware_width := flag.Int("content-aware-width", 0, "...")
+	content_aware_resize := flag.Bool("content-aware-resize", false, "Enable content aware (seam carving) resizing.")
+	content_aware_height := flag.Int("content-aware-height", 0, "Content aware resizing to this height.")
+	content_aware_width := flag.Int("content-aware-width", 0, "Content aware resizing to this width.")
 
-	halftone := flag.Bool("halftone", false, "...")
-	resize := flag.Bool("resize", false, "...")
-	resize_max_dimension := flag.Int("resize-max-dimension", 0, "...")
+	dither := flag.Bool("dither", false, "Dither (halftone) the final image.")
+	resize := flag.Bool("resize", false, "Resize images to a maximum dimension (preserving aspect ratio).")
+	resize_max_dimension := flag.Int("resize-max-dimension", 0, "Resize images to this maximum height or width (preserving aspect ratio).")
 
-	overwrite := flag.Bool("overwrite", false, "...")
+	overwrite := flag.Bool("overwrite", false, "Overwrite exisiting data_url properties")
 
-	format_json := flag.Bool("format", false, "...")
-	as_json := flag.Bool("json", false, "...")
+	format_json := flag.Bool("format", false, "Emit results as formatted JSON.")
+	as_json := flag.Bool("json", false, "Emit results as a JSON array.")
 
 	to_stdout := flag.Bool("stdout", true, "Emit to STDOUT")
 	to_devnull := flag.Bool("null", false, "Emit to /dev/null")
+
+	workers := flag.Int("workers", runtime.NumCPU(), "The number of concurrent workers to append data URLs with")
+	timings := flag.Bool("timings", false, "Log timings (time to wait to process, time to complete processing")
 
 	flag.Parse()
 
@@ -75,6 +81,15 @@ func main() {
 
 	count := int32(0)
 
+	throttle := make(chan bool, *workers)
+
+	for i := 0; i < *workers; i++ {
+		throttle <- true
+	}
+
+	mu := new(sync.RWMutex)
+	wg := new(sync.WaitGroup)
+
 	for {
 
 		select {
@@ -104,44 +119,73 @@ func main() {
 			log.Fatalf("Failed to unmarshal OEmbed record, %v", err)
 		}
 
-		if rec.DataURL == "" || *overwrite {
+		t1 := time.Now()
 
-			opts := &oembed.DataURLOptions{
-				ContentAwareResize: *content_aware_resize,
-				ContentAwareWidth:  *content_aware_width,
-				ContentAwareHeight: *content_aware_height,
-				Resize:             *resize,
-				ResizeMaxDimension: *resize_max_dimension,
-				Halftone:           *halftone,
+		<-throttle
+
+		if *timings {
+			log.Printf("Time to wait to process %s, %v\n", rec.URL, time.Since(t1))
+		}
+
+		wg.Add(1)
+
+		go func(rec *oembed.Photo) {
+
+			t2 := time.Now()
+
+			defer func() {
+
+				throttle <- true
+				wg.Done()
+
+				if *timings {
+					log.Printf("Time to complete processing for %s, %v\n", rec.URL, time.Since(t2))
+				}
+			}()
+
+			if rec.DataURL == "" || *overwrite {
+
+				opts := &oembed.DataURLOptions{
+					ContentAwareResize: *content_aware_resize,
+					ContentAwareWidth:  *content_aware_width,
+					ContentAwareHeight: *content_aware_height,
+					Resize:             *resize,
+					ResizeMaxDimension: *resize_max_dimension,
+					Dither:             *dither,
+				}
+
+				data_url, err := oembed.DataURL(ctx, rec.URL, opts)
+
+				if err != nil {
+					log.Fatalf("Failed to populate data URL for '%s', %v", rec.URL, err)
+				}
+
+				rec.DataURL = data_url
 			}
 
-			data_url, err := oembed.DataURL(ctx, rec.URL, opts)
+			body, err := json.Marshal(rec)
 
 			if err != nil {
-				log.Fatalf("Failed to populate data URL for '%s', %v", rec.URL, err)
+				log.Fatalf("Failed to marshal record, %v", err)
 			}
 
-			rec.DataURL = data_url
-		}
+			if *format_json {
+				body = pretty.Pretty(body)
+			}
 
-		body, err = json.Marshal(rec)
+			new_count := atomic.AddInt32(&count, 1)
 
-		if err != nil {
-			log.Fatalf("Failed to marshal record, %v", err)
-		}
+			mu.Lock()
+			defer mu.Unlock()
 
-		if *format_json {
-			body = pretty.Pretty(body)
-		}
+			if *as_json && new_count > 1 {
+				wr.Write([]byte(","))
+			}
 
-		new_count := atomic.AddInt32(&count, 1)
+			wr.Write(body)
+			wr.Write([]byte("\n"))
 
-		if *as_json && new_count > 1 {
-			wr.Write([]byte(","))
-		}
-
-		wr.Write(body)
-		wr.Write([]byte("\n"))
+		}(rec)
 
 	}
 
@@ -149,4 +193,5 @@ func main() {
 		wr.Write([]byte("]"))
 	}
 
+	wg.Wait()
 }

@@ -25,7 +25,7 @@ type DataURLOptions struct {
 	ContentAwareResize bool
 	ContentAwareHeight int
 	ContentAwareWidth  int
-	Halftone           bool
+	Dither             bool
 	Resize             bool
 	ResizeMaxDimension int
 }
@@ -162,7 +162,7 @@ func DataURL(ctx context.Context, url string, opts *DataURLOptions) (string, err
 
 		// end of caire stuff
 
-		if opts.Halftone {
+		if opts.Dither {
 
 			opts := halftone.NewDefaultHalftoneOptions()
 			new_im, err = halftone.HalftoneImage(ctx, new_im, opts)
