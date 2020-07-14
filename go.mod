@@ -10,4 +10,5 @@ require (
 	github.com/aaronland/go-image-rotate v0.0.2
 	github.com/esimov/caire v1.2.6
 	github.com/mattn/go-sqlite3 v1.14.0
+	github.com/tidwall/pretty v1.0.1
 )

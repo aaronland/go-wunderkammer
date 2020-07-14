@@ -29,5 +29,7 @@ github.com/pkg/errors
 github.com/rwcarlsen/goexif/exif
 github.com/rwcarlsen/goexif/mknote
 github.com/rwcarlsen/goexif/tiff
+# github.com/tidwall/pretty v1.0.1
+github.com/tidwall/pretty
 # golang.org/x/image v0.0.0-20180708004352-c73c2afc3b81
 golang.org/x/image/bmp
