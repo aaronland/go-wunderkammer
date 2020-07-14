@@ -14,8 +14,9 @@ import (
 	"github.com/esimov/caire"
 	"image"
 	"image/draw"
-	"log"
 	"io/ioutil"
+	"log"
+	"math"
 	"net/http"
 	"strings"
 )
@@ -25,7 +26,8 @@ type DataURLOptions struct {
 	ContentAwareHeight int
 	ContentAwareWidth  int
 	Halftone           bool
-	MaxDimension	int
+	Resize             bool
+	ResizeMaxDimension int
 }
 
 func DataURL(ctx context.Context, url string, opts *DataURLOptions) (string, error) {
@@ -65,18 +67,18 @@ func DataURL(ctx context.Context, url string, opts *DataURLOptions) (string, err
 	if strings.HasPrefix(content_type, "image/") {
 
 		dec, err := decode.NewDecoder(ctx, "image://")
-		
+
 		if err != nil {
 			return "", err
 		}
 
 		// FIX ME...
 		enc, err := encode.NewEncoder(ctx, "gif://")
-		
+
 		if err != nil {
 			return "", err
 		}
-		
+
 		br := bytes.NewReader(body)
 
 		im, format, err := dec.Decode(ctx, br)
@@ -98,7 +100,7 @@ func DataURL(ctx context.Context, url string, opts *DataURLOptions) (string, err
 			o, err := rotate.GetImageOrientation(ctx, br)
 
 			if err != nil {
-				log.Println(err)	
+				log.Println(err)
 			} else {
 				orientation = o
 			}
@@ -109,8 +111,6 @@ func DataURL(ctx context.Context, url string, opts *DataURLOptions) (string, err
 		if err != nil {
 			return "", err
 		}
-
-		var content_aware_err error
 
 		if opts.ContentAwareResize {
 
@@ -133,17 +133,27 @@ func DataURL(ctx context.Context, url string, opts *DataURLOptions) (string, err
 			resized_im, err := pr.Resize(caire_im)
 
 			if err != nil {
+
 				log.Printf("Failed to resize %s, %v\n", url, err)
-				content_aware_err = err
+
+				max_fl := math.Max(float64(caire_w), float64(caire_h))
+				max := int(max_fl)
+
+				new_im, err = resize.ResizeImageMax(ctx, new_im, max)
+
+				if err != nil {
+					return "", err
+				}
+
 			} else {
 				new_im = resized_im
 			}
 
 		}
 
-		if !opts.ContentAwareResize || content_aware_err != nil {
+		if !opts.ContentAwareResize && opts.Resize {
 
-			new_im, err = resize.ResizeImageMax(ctx, new_im, opts.MaxDimension)
+			new_im, err = resize.ResizeImageMax(ctx, new_im, opts.ResizeMaxDimension)
 
 			if err != nil {
 				return "", err
