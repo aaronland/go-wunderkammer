@@ -138,6 +138,8 @@ But maybe not for this one:
 
 ### wunderkammer-db
 
+Create a wunderkammer database from a stream of line-separated OEmbed JSON records.
+
 ```
 > ./bin/wunderkammer-db -h
 Usage of ./bin/wunderkammer-db:
