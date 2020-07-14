@@ -50,6 +50,8 @@ Usage of ./bin/append-dataurl:
 For example:
 
 ```
+$> sqlite3 /usr/local/go-wunderkammer/nasm.db < /usr/local/go-wunderkammer/schema/sqlite/oembed.sql
+
 $> /usr/local/go-smithsonian-openaccess/bin/emit \
 	-oembed \
 	-bucket-uri file:///Users/asc/code/OpenAccess metadata/objects/NASM \
@@ -80,10 +82,10 @@ $> /usr/local/go-smithsonian-openaccess/bin/emit \
 2020/07/14 09:04:44 Time to wait to process https://ids.si.edu/ids/download?id=NASM-A19350058000-NASM2019-01760_screen, 146.644379ms
 ...and so on
 
-> du -h nasm.db 
+> du -h /usr/local/go-wunderkammer/schema/sqlite/nasm.db
 224M	nasm.db
 
-$> sqlite3 nasm.db
+$> sqlite3 /usr/local/go-wunderkammer/schema/sqlite/nasm.db
 sqlite> SELECT * FROM oembed LIMIT 1;
 http://ids.si.edu/ids/deliveryService?id=NASM-A19670206000_PS01|si://nasm/o/A19670206000|{"version":"1.0","type":"photo","width":-1,"height":-1,"title":"Space Food, Beef and Vegetables, Mercury, Friendship 7 (Transferred from NASA)","url":"http://ids.si.edu/ids/deliveryService?id=NASM-A19670206000_PS01","author_name":"John H. Glenn, Jr.","author_url":"https://airandspace.si.edu/collection/id/nasm_A19670206000","provider_name":"National Air and Space Museum","provider_url":"https://airandspace.si.edu","object_uri":"si://nasm/o/A19670206000","data_url":"data:image/jpeg;base64,R0lGODlhTgTQB4cAAAAAAAAARAAAiAAAzABEAA... and so om
 ```
@@ -127,6 +129,11 @@ Database DSN strings are URIs in the form of `{DATABASE_CLASS}://{DATABASE_DRIVE
 
 For example: `sql://sqlite3/usr/local/oembed.db`
 
+##### Supported database classes
+
+###### sql
+
+Index records with any valid Go language `database/sql` driver assuming its been imported by your code. Currently the only default driver that is included is [mattn/go-sqlite3](https://github.com/mattn/go-sqlite3).
 
 ## See also
 
