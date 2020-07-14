@@ -122,9 +122,13 @@ $> /usr/local/go-smithsonian-openaccess/bin/emit \
 ...time passes (easily hours, go get a coffee or something) and your computer's fan goes WHHHHHHHIIIIIIRRRRRRR!!!!
 ```
 
-Content-aware resizing currently doesn't check to see whether content-aware resizing _shouldn't_ be applied. For example when the aspect ratio of the input image is different than the aspect ratio of the resized content. For example:
+Content-aware resizing currently doesn't check to see whether content-aware resizing _shouldn't_ be applied. For example when the aspect ratio of the input image is different than the aspect ratio of the resized content.
+
+For example, content-aware resizing makes sense for this image:
 
 ![](docs/images/nasm-plane.jpg)
+
+But maybe not for this one:
 
 ![](docs/images/nasm-suit.jpg)
 
