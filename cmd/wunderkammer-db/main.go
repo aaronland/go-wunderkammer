@@ -18,7 +18,7 @@ import (
 
 func main() {
 
-	dsn := flag.String("database-dsn", "sql://sqlite3/oembed.db", "...")
+	dsn := flag.String("database-dsn", "sql://sqlite3/oembed.db", "A valid wunderkammer database DSN string.")
 
 	flag.Parse()
 

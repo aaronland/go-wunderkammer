@@ -3,6 +3,7 @@ module github.com/aaronland/go-wunderkammer
 go 1.12
 
 require (
+	github.com/aaronland/go-http-server v0.0.4
 	github.com/aaronland/go-image-decode v0.0.2
 	github.com/aaronland/go-image-encode v0.0.0-20200215191655-047f61aedbfe
 	github.com/aaronland/go-image-halftone v0.0.1

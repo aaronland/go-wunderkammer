@@ -78,6 +78,15 @@ $> /usr/local/go-smithsonian-openaccess/bin/emit \
 ### wunderkammer-db
 
 ```
+> ./bin/wunderkammer-db -h
+Usage of ./bin/wunderkammer-db:
+  -database-dsn string
+    	A valid wunderkammer database DSN string. (default "sql://sqlite3/oembed.db")
+```
+
+For example:
+
+```
 $> sqlite3 metmuseum.db < schema/sqlite/oembed.sqlite
 
 # as in: https://github.com/aaronland/go-metmuseum-openaccess#emit
@@ -98,6 +107,14 @@ Enter ".help" for usage hints.
 sqlite> SELECT COUNT(url) FROM oembed;
 236288
 ```
+
+#### DSN strings
+
+Database DSN strings are URIs in the form of `{DATABASE_CLASS}://{DATABASE_DRIVER}{DATABASE_PATH}`
+
+For example: `sql://sqlite3/usr/local/oembed.db`
+
+
 
 ## See also
 
