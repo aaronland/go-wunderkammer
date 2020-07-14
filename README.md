@@ -90,7 +90,7 @@ $> /usr/local/go-smithsonian-openaccess/bin/emit \
 ...time passes
 2020/07/14 09:26:50 Time to process 2414 records, 22m23.069234259s
 
-> du -h /usr/local/go-wunderkammer/schema/sqlite/nasm.db
+$> du -h /usr/local/go-wunderkammer/schema/sqlite/nasm.db
 224M	nasm.db
 
 $> sqlite3 /usr/local/go-wunderkammer/schema/sqlite/nasm.db
@@ -135,15 +135,15 @@ sqlite> SELECT COUNT(url) FROM oembed;
 236288
 ```
 
-#### DSN strings
+## Database DSN strings
 
 Database DSN strings are URIs in the form of `{DATABASE_CLASS}://{DATABASE_DRIVER}{DATABASE_PATH}`
 
 For example: `sql://sqlite3/usr/local/oembed.db`
 
-##### Supported database classes
+### Supported database classes
 
-###### sql
+#### sql
 
 Index records with any valid Go language `database/sql` driver assuming its been imported by your code. Currently the only default driver that is included is the [mattn/go-sqlite3](https://github.com/mattn/go-sqlite3) `sqlite3` driver.
 
