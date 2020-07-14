@@ -28,6 +28,8 @@ func main() {
 	resize := flag.Bool("resize", false, "Resize images to a maximum dimension (preserving aspect ratio).")
 	resize_max_dimension := flag.Int("resize-max-dimension", 0, "Resize images to this maximum height or width (preserving aspect ratio).")
 
+	auto_rotate := flag.Bool("auto-rotate", false, "Auto-rotate image based on EXIF data")
+
 	overwrite := flag.Bool("overwrite", false, "Overwrite exisiting data_url properties")
 
 	format_json := flag.Bool("format", false, "Emit results as formatted JSON.")
@@ -157,6 +159,7 @@ func main() {
 					ResizeMaxDimension: *resize_max_dimension,
 					Dither:             *dither,
 					Format:             *image_format,
+					AutoRotate:         *auto_rotate,
 				}
 
 				data_url, err := oembed.DataURL(ctx, rec.URL, opts)

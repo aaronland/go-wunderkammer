@@ -30,6 +30,7 @@ type DataURLOptions struct {
 	Resize             bool
 	ResizeMaxDimension int
 	Format             string
+	AutoRotate         bool
 }
 
 func DataURL(ctx context.Context, url string, opts *DataURLOptions) (string, error) {
@@ -96,35 +97,38 @@ func DataURL(ctx context.Context, url string, opts *DataURLOptions) (string, err
 
 		br := bytes.NewReader(body)
 
-		im, format, err := dec.Decode(ctx, br)
+		new_im, format, err := dec.Decode(ctx, br)
 
 		if err != nil {
 			return "", err
 		}
 
-		orientation := "0"
+		if opts.AutoRotate {
 
-		if format == "jpeg" {
+			orientation := "0"
 
-			_, err := br.Seek(0, 0)
+			if format == "jpeg" {
+
+				_, err := br.Seek(0, 0)
+
+				if err != nil {
+					return "", err
+				}
+
+				o, err := rotate.GetImageOrientation(ctx, br)
+
+				if err != nil {
+					log.Println(err)
+				} else {
+					orientation = o
+				}
+			}
+
+			new_im, err = rotate.RotateImageWithOrientation(ctx, new_im, orientation)
 
 			if err != nil {
 				return "", err
 			}
-
-			o, err := rotate.GetImageOrientation(ctx, br)
-
-			if err != nil {
-				log.Println(err)
-			} else {
-				orientation = o
-			}
-		}
-
-		new_im, err := rotate.RotateImageWithOrientation(ctx, im, orientation)
-
-		if err != nil {
-			return "", err
 		}
 
 		if opts.ContentAwareResize {
