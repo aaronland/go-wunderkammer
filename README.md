@@ -124,7 +124,7 @@ $> /usr/local/go-smithsonian-openaccess/bin/emit \
 ...and your computer's fan goes WHHHHHHHIIIIIIRRRRRRR!!!!
 ```
 
-Content-aware resizing currently doesn't check to see whether content-aware resizing _shouldn't_ be applied. For example when the aspect ratio of the input image is different than the aspect ratio of the resized content.
+Content-aware resizing currently doesn't [check to see whether content-aware resizing _shouldn't_ be applied](https://github.com/aaronland/go-wunderkammer/issues/1). For example when the aspect ratio of the input image is different than the aspect ratio of the resized content.
 
 For example, content-aware resizing makes sense for this image:
 
