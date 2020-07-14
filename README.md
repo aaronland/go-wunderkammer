@@ -99,7 +99,7 @@ http://ids.si.edu/ids/deliveryService?id=NASM-A19670206000_PS01|si://nasm/o/A196
 
 #### Content aware resizing
 
-Content aware resizing (seam carving) is done using the [esimov/caire](https://github.com/esimov/caire) package. It is not fast (it's doing a lot of work).
+Content aware resizing (seam carving) is done using the [esimov/caire](https://github.com/esimov/caire) package. It is not fast and will make your computer's fan go `WHIIIIIIIRRRRRRRRRRRRR` (it's doing a lot of work).
 
 ### wunderkammer-db
 
