@@ -1,6 +1,6 @@
 # go-wunderkammer
 
-Go package for working with "wunderkammer" databases.
+Go package for working with "[wunderkammer](https://github.com/aaronland/ios-wunderkammer)" databases.
 
 ## Important
 
