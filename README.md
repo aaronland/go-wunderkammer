@@ -18,7 +18,7 @@ go build -mod vendor -o bin/append-dataurl cmd/append-dataurl/main.go
 
 ### append-dataurl
 
-Update a stream of OEmbed records to append a base64 encoded data URL to the `data_url` property. The source of the data URL is the value of the `url` property which will be fetched using an HTTP `GET` request.
+Update a stream of line-separated OEmbed JSON records to append a base64 encoded data URL to the `data_url` property. The source of the data URL is the value of the `url` property which will be fetched using an HTTP `GET` request.
 
 ```
 $> ./bin/append-dataurl -h
@@ -88,7 +88,7 @@ $> /usr/local/go-smithsonian-openaccess/bin/emit \
 2020/07/14 09:04:44 Time to wait to process https://ids.si.edu/ids/download?id=NASM-A19350058000-NASM2019-01760_screen, 146.644379ms
 ...and so on
 ...time passes
-2020/07/14 10:08:26 Time to process 2414 records, 22m23.069234259s
+2020/07/14 09:26:50 Time to process 2414 records, 22m23.069234259s
 
 > du -h /usr/local/go-wunderkammer/schema/sqlite/nasm.db
 224M	nasm.db
