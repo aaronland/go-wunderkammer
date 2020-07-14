@@ -102,6 +102,8 @@ http://ids.si.edu/ids/deliveryService?id=NASM-A19670206000_PS01|si://nasm/o/A196
 
 Content aware resizing (seam carving) is done using the [esimov/caire](https://github.com/esimov/caire) package. It is not fast and will make your computer's fan go `WHIIIIIIIRRRRRRRRRRRRR` (it's doing a lot of work).
 
+For example, here's what you would do to resize all the images to fit a 800x480 pixel display:
+
 ```
 $> sqlite3 /usr/local/go-wunderkammer/nasm.db < /usr/local/go-wunderkammer/schema/sqlite/oembed.sql
 
@@ -110,7 +112,6 @@ $> /usr/local/go-smithsonian-openaccess/bin/emit \
 	-bucket-uri file:///Users/asc/code/OpenAccess metadata/objects/NASM \
 
    | /usr/local/go-wunderkammer/bin/append-dataurl \
-	-timings \
 	-dither \
 	-content-aware-resize \
 	-content-aware-height 480 \
@@ -119,7 +120,8 @@ $> /usr/local/go-smithsonian-openaccess/bin/emit \
    | /usr/local/go-wunderkammer/bin/wunderkammer-db \
 	-database-dsn 'sql://sqlite3/usr/local/go-wunderkammer/nasm.db'
 
-...time passes (easily hours, go get a coffee or something) and your computer's fan goes WHHHHHHHIIIIIIRRRRRRR!!!!
+...time passes (easily hours, go get a coffee or something)
+...and your computer's fan goes WHHHHHHHIIIIIIRRRRRRR!!!!
 ```
 
 Content-aware resizing currently doesn't check to see whether content-aware resizing _shouldn't_ be applied. For example when the aspect ratio of the input image is different than the aspect ratio of the resized content.
