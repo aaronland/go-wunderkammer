@@ -29,7 +29,7 @@ type DataURLOptions struct {
 	Dither             bool
 	Resize             bool
 	ResizeMaxDimension int
-	Format string
+	Format             string
 }
 
 func DataURL(ctx context.Context, url string, opts *DataURLOptions) (string, error) {
@@ -71,7 +71,7 @@ func DataURL(ctx context.Context, url string, opts *DataURLOptions) (string, err
 	if len(im_type) != 2 {
 		return "", errors.New("Unrecognized content type")
 	}
-	
+
 	if im_type[0] == "image" {
 
 		im_format := opts.Format
@@ -79,7 +79,7 @@ func DataURL(ctx context.Context, url string, opts *DataURLOptions) (string, err
 		if im_format == "" {
 			im_format = im_type[1]
 		}
-		
+
 		dec, err := decode.NewDecoder(ctx, "image://")
 
 		if err != nil {
@@ -87,7 +87,7 @@ func DataURL(ctx context.Context, url string, opts *DataURLOptions) (string, err
 		}
 
 		enc_uri := fmt.Sprintf("%s://", im_format)
-		
+
 		enc, err := encode.NewEncoder(ctx, enc_uri)
 
 		if err != nil {

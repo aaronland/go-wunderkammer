@@ -1,80 +1,46 @@
 package main
 
+// THIS IS EARLY STAGES AND EVERYTHING IS IN FLUX
+
 import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
 import (
 	"context"
-	"database/sql"
-	"encoding/base64"
 	"flag"
 	"github.com/aaronland/go-http-server"
+	"github.com/aaronland/go-wunderkammer/oembed"
+	"github.com/aaronland/go-wunderkammer/www"
 	"log"
 	"net/http"
-	"strings"
 )
-
-func NewImageHandler(db *sql.DB) (http.Handler, error) {
-
-	fn := func(rsp http.ResponseWriter, req *http.Request) {
-
-		ctx := req.Context()
-
-		path := req.URL.Path
-		path = strings.TrimLeft(path, "/")
-
-		q := "SELECT body FROM images WHERE id = ?"
-		row := db.QueryRowContext(ctx, q, path)
-
-		var body string
-		err := row.Scan(&body)
-
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		raw, err := base64.StdEncoding.DecodeString(body)
-
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		rsp.Header().Set("Content-type", "image/png")
-		rsp.Write(raw)
-	}
-
-	h := http.HandlerFunc(fn)
-	return h, nil
-}
 
 func main() {
 
 	server_uri := flag.String("server-uri", "http://localhost:8080", "...")
-	sqlite_dsn := flag.String("sqlite-dsn", ":memory:", "...")
+	dsn := flag.String("database-dsn", "sql://sqlite3/oembed.db", "A valid wunderkammer database DSN string.")
 
 	flag.Parse()
 
 	ctx := context.Background()
 
-	db, err := sql.Open("sqlite3", *sqlite_dsn)
+	db, err := oembed.NewSQLOEmbedDatabase(ctx, *dsn)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to create database, %v", err)
 	}
 
 	defer db.Close()
 
-	image_handler, err := NewImageHandler(db)
+	random_handler, err := www.NewRandomHandler(db)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	mux := http.NewServeMux()
-	mux.Handle("/", image_handler)
+	mux.Handle("/random", random_handler)
 
 	s, err := server.NewServer(ctx, *server_uri)
 
