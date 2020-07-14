@@ -39,6 +39,8 @@ func main() {
 	workers := flag.Int("workers", runtime.NumCPU(), "The number of concurrent workers to append data URLs with")
 	timings := flag.Bool("timings", false, "Log timings (time to wait to process, time to complete processing")
 
+	image_format := flag.String("image-format", "jpeg", "Output format for encoded 'data_url' images. If empty then the content-type of the source image (defined in the 'url' property) will be used.")
+	
 	flag.Parse()
 
 	if *content_aware_resize {
@@ -91,7 +93,7 @@ func main() {
 	wg := new(sync.WaitGroup)
 
 	t0 := time.Now()
-	
+
 	for {
 
 		select {
@@ -154,6 +156,7 @@ func main() {
 					Resize:             *resize,
 					ResizeMaxDimension: *resize_max_dimension,
 					Dither:             *dither,
+					Format: *image_format,
 				}
 
 				data_url, err := oembed.DataURL(ctx, rec.URL, opts)

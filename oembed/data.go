@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"github.com/aaronland/go-image-decode"
 	"github.com/aaronland/go-image-encode"
@@ -28,6 +29,7 @@ type DataURLOptions struct {
 	Dither             bool
 	Resize             bool
 	ResizeMaxDimension int
+	Format string
 }
 
 func DataURL(ctx context.Context, url string, opts *DataURLOptions) (string, error) {
@@ -64,16 +66,29 @@ func DataURL(ctx context.Context, url string, opts *DataURLOptions) (string, err
 		return "", err
 	}
 
-	if strings.HasPrefix(content_type, "image/") {
+	im_type := strings.Split(content_type, "/")
 
+	if len(im_type) != 2 {
+		return "", errors.New("Unrecognized content type")
+	}
+	
+	if im_type[0] == "image" {
+
+		im_format := opts.Format
+
+		if im_format == "" {
+			im_format = im_type[1]
+		}
+		
 		dec, err := decode.NewDecoder(ctx, "image://")
 
 		if err != nil {
 			return "", err
 		}
 
-		// FIX ME...
-		enc, err := encode.NewEncoder(ctx, "gif://")
+		enc_uri := fmt.Sprintf("%s://", im_format)
+		
+		enc, err := encode.NewEncoder(ctx, enc_uri)
 
 		if err != nil {
 			return "", err

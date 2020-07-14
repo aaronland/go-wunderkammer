@@ -21,7 +21,7 @@ go build -mod vendor -o bin/append-dataurl cmd/append-dataurl/main.go
 Update a stream of OEmbed records to append a base64 encoded data URL to the `data_url` property. The source of the data URL is the value of the `url` property which will be fetched using an HTTP `GET` request.
 
 ```
-> ./bin/append-dataurl -h
+$> ./bin/append-dataurl -h
 Usage of ./bin/append-dataurl:
   -content-aware-height int
     	Content aware resizing to this height.
@@ -33,6 +33,8 @@ Usage of ./bin/append-dataurl:
     	Dither (halftone) the final image.
   -format
     	Emit results as formatted JSON.
+  -image-format string
+    	Output format for encoded 'data_url' images. If empty then the content-type of the source image (defined in the 'url' property) will be used. (default "jpeg")
   -json
     	Emit results as a JSON array.
   -null
@@ -45,6 +47,10 @@ Usage of ./bin/append-dataurl:
     	Resize images to this maximum height or width (preserving aspect ratio).
   -stdout
     	Emit to STDOUT (default true)
+  -timings
+    	Log timings (time to wait to process, time to complete processing
+  -workers int
+    	The number of concurrent workers to append data URLs with (default {AVAILABLE CPUS})	
 ```
 
 For example:
@@ -89,6 +95,10 @@ $> sqlite3 /usr/local/go-wunderkammer/schema/sqlite/nasm.db
 sqlite> SELECT * FROM oembed LIMIT 1;
 http://ids.si.edu/ids/deliveryService?id=NASM-A19670206000_PS01|si://nasm/o/A19670206000|{"version":"1.0","type":"photo","width":-1,"height":-1,"title":"Space Food, Beef and Vegetables, Mercury, Friendship 7 (Transferred from NASA)","url":"http://ids.si.edu/ids/deliveryService?id=NASM-A19670206000_PS01","author_name":"John H. Glenn, Jr.","author_url":"https://airandspace.si.edu/collection/id/nasm_A19670206000","provider_name":"National Air and Space Museum","provider_url":"https://airandspace.si.edu","object_uri":"si://nasm/o/A19670206000","data_url":"data:image/jpeg;base64,R0lGODlhTgTQB4cAAAAAAAAARAAAiAAAzABEAA... and so om
 ```
+
+#### Content aware resizing
+
+Content aware resizing (seam carving) is done using the [esimov/caire](https://github.com/esimov/caire) package. It is not fast (it's doing a lot of work).
 
 ### wunderkammer-db
 
