@@ -1,10 +1,14 @@
 # go-wunderkammer
 
+Go package for working with "wunderkammer" databases.
+
 ## Important
 
 This is work in progress.
 
 ## Tools
+
+To build binary versions of these tools run the `cli` Makefile target. For example:
 
 ```
 $> make cli
@@ -13,6 +17,8 @@ go build -mod vendor -o bin/append-dataurl cmd/append-dataurl/main.go
 ```
 
 ### append-dataurl
+
+Update a stream of OEmbed records to append a base64 encoded data URL to the `data_url` property. The source of the data URL is the value of the `url` property which will be fetched using an HTTP `GET` request.
 
 ```
 > ./bin/append-dataurl -h
@@ -73,6 +79,13 @@ $> /usr/local/go-smithsonian-openaccess/bin/emit \
 2020/07/14 09:04:44 Time to complete processing for https://ids.si.edu/ids/download?id=NASM-A19350058000-NASM2019-01744_screen, 4.184583514s
 2020/07/14 09:04:44 Time to wait to process https://ids.si.edu/ids/download?id=NASM-A19350058000-NASM2019-01760_screen, 146.644379ms
 ...and so on
+
+> du -h nasm.db 
+224M	nasm.db
+
+$> sqlite3 nasm.db
+sqlite> SELECT * FROM oembed LIMIT 1;
+http://ids.si.edu/ids/deliveryService?id=NASM-A19670206000_PS01|si://nasm/o/A19670206000|{"version":"1.0","type":"photo","width":-1,"height":-1,"title":"Space Food, Beef and Vegetables, Mercury, Friendship 7 (Transferred from NASA)","url":"http://ids.si.edu/ids/deliveryService?id=NASM-A19670206000_PS01","author_name":"John H. Glenn, Jr.","author_url":"https://airandspace.si.edu/collection/id/nasm_A19670206000","provider_name":"National Air and Space Museum","provider_url":"https://airandspace.si.edu","object_uri":"si://nasm/o/A19670206000","data_url":"data:image/jpeg;base64,R0lGODlhTgTQB4cAAAAAAAAARAAAiAAAzABEAA... and so om
 ```
 
 ### wunderkammer-db
@@ -113,7 +126,6 @@ sqlite> SELECT COUNT(url) FROM oembed;
 Database DSN strings are URIs in the form of `{DATABASE_CLASS}://{DATABASE_DRIVER}{DATABASE_PATH}`
 
 For example: `sql://sqlite3/usr/local/oembed.db`
-
 
 
 ## See also

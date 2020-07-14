@@ -90,6 +90,8 @@ func main() {
 	mu := new(sync.RWMutex)
 	wg := new(sync.WaitGroup)
 
+	t0 := time.Now()
+	
 	for {
 
 		select {
@@ -194,4 +196,8 @@ func main() {
 	}
 
 	wg.Wait()
+
+	if *timings {
+		log.Printf("Time to process %d records, %v\n", count, time.Since(t0))
+	}
 }
