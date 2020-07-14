@@ -62,11 +62,11 @@ $> /usr/local/go-smithsonian-openaccess/bin/emit \
 	-oembed \
 	-bucket-uri file:///Users/asc/code/OpenAccess metadata/objects/NASM \
 
-   | bin/append-dataurl \
+   | /usr/local/go-wunderkammer/bin/append-dataurl \
 	-timings \
 	-dither \
 
-   | bin/wunderkammer-db \
+   | /usr/local/go-wunderkammer/bin/wunderkammer-db \
 	-database-dsn 'sql://sqlite3/usr/local/go-wunderkammer/nasm.db'
 
 2020/07/14 09:04:40 Time to wait to process http://ids.si.edu/ids/deliveryService?id=NASM-A19670206000_PS01, 412ns
@@ -87,6 +87,7 @@ $> /usr/local/go-smithsonian-openaccess/bin/emit \
 2020/07/14 09:04:44 Time to complete processing for https://ids.si.edu/ids/download?id=NASM-A19350058000-NASM2019-01744_screen, 4.184583514s
 2020/07/14 09:04:44 Time to wait to process https://ids.si.edu/ids/download?id=NASM-A19350058000-NASM2019-01760_screen, 146.644379ms
 ...and so on
+...time passes
 2020/07/14 10:08:26 Time to process 2414 records, 22m23.069234259s
 
 > du -h /usr/local/go-wunderkammer/schema/sqlite/nasm.db
