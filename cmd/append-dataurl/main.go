@@ -41,6 +41,8 @@ func main() {
 	workers := flag.Int("workers", runtime.NumCPU(), "The number of concurrent workers to append data URLs with")
 	timings := flag.Bool("timings", false, "Log timings (time to wait to process, time to complete processing")
 
+	strict := flag.Bool("strict", false, "If true any error appending a data URL will stop execution.")
+
 	image_format := flag.String("image-format", "jpeg", "Output format for encoded 'data_url' images. If empty then the content-type of the source image (defined in the 'url' property) will be used.")
 
 	flag.Parse()
@@ -64,6 +66,7 @@ func main() {
 	}
 
 	ctx := context.Background()
+	ctx, cancel := context.WithCancel(ctx)
 
 	writers := make([]io.Writer, 0)
 
@@ -149,6 +152,13 @@ func main() {
 				}
 			}()
 
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				// pass
+			}
+			
 			if rec.DataURL == "" || *overwrite {
 
 				opts := &oembed.DataURLOptions{
@@ -165,7 +175,14 @@ func main() {
 				data_url, err := oembed.DataURL(ctx, rec.URL, opts)
 
 				if err != nil {
-					log.Fatalf("Failed to populate data URL for '%s', %v", rec.URL, err)
+
+					log.Printf("Failed to populate data URL for '%s', %v\n", rec.URL, err)
+
+					if *strict {
+						cancel()
+					}
+
+					return
 				}
 
 				rec.DataURL = data_url

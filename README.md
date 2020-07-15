@@ -47,6 +47,8 @@ Usage of ./bin/append-dataurl:
     	Resize images to a maximum dimension (preserving aspect ratio).
   -resize-max-dimension int
     	Resize images to this maximum height or width (preserving aspect ratio).
+  -strict
+    	If true any error appending a data URL will stop execution.
   -stdout
     	Emit to STDOUT (default true)
   -timings
