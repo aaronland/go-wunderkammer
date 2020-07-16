@@ -25,6 +25,7 @@ type Photo struct {
 type OEmbedDatabase interface {
 	AddOEmbed(context.Context, *Photo) error
 	GetRandomOEmbed(context.Context) (*Photo, error)
+	GetOEmbedWithURL(context.Context, string) (*Photo, error)
 	GetOEmbedWithObjectURI(context.Context, string) ([]*Photo, error)
 	Close() error
 }

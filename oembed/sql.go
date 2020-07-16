@@ -120,3 +120,78 @@ func (db *SQLOEmbedDatabase) GetRandomOEmbed(ctx context.Context) (*Photo, error
 
 	return rec, nil
 }
+
+func (db *SQLOEmbedDatabase) GetOEmbedWithURL(ctx context.Context, url string) (*Photo, error) {
+
+	q := "SELECT body FROM oembed WHERE url = ?"
+
+	row := db.conn.QueryRowContext(ctx, q, url)
+
+	var body []byte
+
+	err := row.Scan(&body)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var rec *Photo
+
+	err = json.Unmarshal(body, &rec)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return rec, nil
+}
+
+func (db *SQLOEmbedDatabase) GetOEmbedWithObjectURI(ctx context.Context, object_uri string) ([]*Photo, error) {
+
+	q := "SELECT body FROM oembed WHERE object_uri = ?"
+
+	rows, err := db.conn.QueryContext(ctx, q, object_uri)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	photos := make([]*Photo, 0)
+
+	for rows.Next() {
+
+		var body []byte
+
+		err := rows.Scan(&body)
+
+		if err != nil {
+			return nil, err
+		}
+
+		var ph *Photo
+
+		err = json.Unmarshal(body, &ph)
+
+		if err != nil {
+			return nil, err
+		}
+
+		photos = append(photos, ph)
+	}
+
+	err = rows.Close()
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = rows.Err()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return photos, nil
+}

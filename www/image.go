@@ -3,62 +3,62 @@ package www
 // THIS IS EARLY STAGES AND EVERYTHING IS IN FLUX
 
 import (
-	"encoding/base64"
+	"errors"
+	"github.com/aaronland/go-wunderkammer/html"
 	"github.com/aaronland/go-wunderkammer/oembed"
+	"html/template"
 	_ "log"
 	"net/http"
-	"regexp"
 )
 
-func NewImageHandler(db oembed.OEmbedDatabase) (http.Handler, error) {
+type ImageTemplateVars struct {
+	Header *html.Header
+	Photo  *oembed.Photo
+}
 
-	re, err := regexp.Compile(`^data:(image/(?:[a-z]+));base64,(.*)$`)
+func NewImageHandler(db oembed.OEmbedDatabase, t *template.Template) (http.Handler, error) {
 
-	if err != nil {
-		return nil, err
+	t = t.Lookup("image")
+
+	if t == nil {
+		return nil, errors.New("Missing 'object' template")
 	}
 
 	fn := func(rsp http.ResponseWriter, req *http.Request) {
 
 		ctx := req.Context()
 
-		ph, err := db.GetRandomOEmbed(ctx)
+		q := req.URL.Query()
+
+		url := q.Get("url")
+
+		if url == "" {
+			http.Error(rsp, "Missing url", http.StatusBadRequest)
+			return
+		}
+
+		ph, err := db.GetOEmbedWithURL(ctx, url)
 
 		if err != nil {
 			http.Error(rsp, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		// START OF please put this in a function...
+		header := &html.Header{}
 
-		data_url := ph.DataURL
-
-		if data_url == "" {
-			http.Redirect(rsp, req, ph.URL, http.StatusSeeOther)
-			return
+		vars := ImageTemplateVars{
+			Header: header,
+			Photo:  ph,
 		}
 
-		m := re.FindStringSubmatch(data_url)
-
-		if len(m) != 3 {
-			http.Error(rsp, "Invalid data URL", http.StatusInternalServerError)
-			return
-		}
-
-		content_type := m[1]
-		b64_data := m[2]
-
-		raw, err := base64.StdEncoding.DecodeString(b64_data)
+		err = t.Execute(rsp, vars)
 
 		if err != nil {
 			http.Error(rsp, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		rsp.Header().Set("Content-type", content_type)
-		rsp.Write(raw)
-
-		// END OF please put this in a function...
+		return
 	}
 
 	h := http.HandlerFunc(fn)
