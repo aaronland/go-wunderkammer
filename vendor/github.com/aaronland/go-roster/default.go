@@ -3,7 +3,6 @@ package roster
 import (
 	"context"
 	"errors"
-	"fmt"
 	"sort"
 	"strings"
 	"sync"
@@ -38,8 +37,7 @@ func (dr *DefaultRoster) Driver(ctx context.Context, name string) (interface{}, 
 	i, ok := dr.drivers[nrml_name]
 
 	if !ok {
-		msg := fmt.Sprintf("Unknown driver: %s (%s)", name, nrml_name)
-		return nil, errors.New(msg)
+		return nil, errors.New("Unknown driver")
 	}
 
 	return i, nil

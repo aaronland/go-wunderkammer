@@ -1,7 +1,5 @@
 # github.com/MaxHalford/halfgone v0.0.0-20171017091812-482157b86ccb
 github.com/MaxHalford/halfgone
-# github.com/aaronland/go-http-server v0.0.4
-github.com/aaronland/go-http-server
 # github.com/aaronland/go-image-decode v0.0.2
 github.com/aaronland/go-image-decode
 # github.com/aaronland/go-image-encode v0.0.0-20200215191655-047f61aedbfe
@@ -15,14 +13,8 @@ github.com/aaronland/go-image-rotate
 github.com/aaronland/go-image-rotate/imaging
 # github.com/aaronland/go-image-transform v0.0.0-20200216021135-f5c5cf8fc134
 github.com/aaronland/go-image-transform
-# github.com/aaronland/go-roster v0.0.2
+# github.com/aaronland/go-roster v0.0.1
 github.com/aaronland/go-roster
-# github.com/aws/aws-lambda-go v1.10.0
-github.com/aws/aws-lambda-go/events
-github.com/aws/aws-lambda-go/lambda
-github.com/aws/aws-lambda-go/lambda/handlertrace
-github.com/aws/aws-lambda-go/lambda/messages
-github.com/aws/aws-lambda-go/lambdacontext
 # github.com/esimov/caire v1.2.6
 github.com/esimov/caire
 # github.com/esimov/pigo v1.3.0
@@ -39,7 +31,5 @@ github.com/rwcarlsen/goexif/mknote
 github.com/rwcarlsen/goexif/tiff
 # github.com/tidwall/pretty v1.0.1
 github.com/tidwall/pretty
-# github.com/whosonfirst/algnhsa v0.1.0
-github.com/whosonfirst/algnhsa
 # golang.org/x/image v0.0.0-20180708004352-c73c2afc3b81
 golang.org/x/image/bmp
