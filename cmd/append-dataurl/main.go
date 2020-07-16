@@ -158,7 +158,7 @@ func main() {
 			default:
 				// pass
 			}
-			
+
 			if rec.DataURL == "" || *overwrite {
 
 				opts := &oembed.DataURLOptions{
