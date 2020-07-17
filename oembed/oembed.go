@@ -22,10 +22,13 @@ type Photo struct {
 // TBD - how to handle (eventually) things that aren't "photos"
 // (20200713/thisisaaronland)
 
+type OEmbedDatabaseCallback func(context.Context, *Photo) error
+
 type OEmbedDatabase interface {
 	AddOEmbed(context.Context, *Photo) error
 	GetRandomOEmbed(context.Context) (*Photo, error)
 	GetOEmbedWithURL(context.Context, string) (*Photo, error)
 	GetOEmbedWithObjectURI(context.Context, string) ([]*Photo, error)
+	GetOEmbedWithCallback(context.Context, OEmbedDatabaseCallback) error
 	Close() error
 }

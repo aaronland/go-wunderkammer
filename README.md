@@ -7,13 +7,61 @@ Go package for working with "[wunderkammer](https://github.com/aaronland/ios-wun
 To build binary versions of these tools run the `cli` Makefile target. For example:
 
 ```
-$> make cli
+> make cli
+go build -mod vendor -o bin/emit cmd/emit/main.go
 go build -mod vendor -o bin/wunderkammer-db cmd/wunderkammer-db/main.go
 ```
 
 ### append-dataurl
 
 The `append-dataurl` tool that used to be part of this package has been moved in to the [go-wunderkammer-image](https://github.com/aaronland/go-wunderkammer-image) package.
+
+### emit
+
+Emit the contents of a wunderkammer database as a stream of OEmbed records.
+
+```
+> ./bin/emit -h
+Usage of ./bin/emit:
+  -database-dsn string
+    	A valid wunderkammer database DSN string. (default "sql://sqlite3/oembed.db")
+  -format-json
+    	Format JSON output for each record.
+  -json
+    	Emit a JSON list.
+  -null
+    	Emit to /dev/null
+  -query value
+    	One or more {PATH}={REGEXP} parameters for filtering records.
+  -query-mode string
+    	Specify how query filtering should be evaluated. Valid modes are: ALL, ANY (default "ALL")
+  -stdout
+    	Emit to STDOUT (default true)
+```
+
+For example, here's how you might "emit" a wunderkammer database produced by the `wunderkammer-db` tool described below:
+
+```
+$> ./bin/emit \
+	-format-json \
+	-database-dsn 'sql://usr/local/go-wunderkammer/hmsg.db'
+
+{
+  "version": "1.0",
+  "type": "photo",
+  "width": -1,
+  "height": -1,
+  "title": "Untitled (One Of Six Prints) (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)",
+  "url": "https://ids.si.edu/ids/download?id=HMSG-HMSG_19865656_20150513_001_screen",
+  "author_name": "Abraham Walkowitz, American, b. Tyumen, Russia, 1878–1965",
+  "author_url": "https://hirshhorn.si.edu/search-results/search-result-details/?edan_search_value=hmsg_86.5656",
+  "provider_name": "Hirshhorn Museum and Sculpture Garden",
+  "provider_url": "https://hirshhorn.si.edu",
+  "object_uri": "si://hmsg/o/86_5656",
+  "data_url": "data:image/jpeg;base64,R0lGODlh9AFeAYcAAAAAAAAARAAAiAAAzABEAABERABE ...and so on
+}
+... and so on
+```
 
 ### wunderkammer-db
 
