@@ -63,6 +63,104 @@ $> ./bin/emit \
 ... and so on
 ```
 
+#### JSON
+
+By default records are emitted as a stream of line-separated JSON. If you want to emit a valid JSON list then you would pass in the `-json` flag. For example:
+
+```
+$> ./bin/emit -database-dsn 'sql://sqlite3/usr/local/go-wunderkammer/hmsg.db' \
+	-json \
+
+   | jq '.[]["author_name"]' \
+   | sort \
+   | uniq
+
+"Abastenia St. Leger Eberle, American, b. Webster City, Iowa, 1878–1942"
+"Abbott Thayer, American, 1849–1921"
+"Abraham Walkowitz, American, b. Tyumen, Russia, 1878–1965"
+"Albert Bierstadt, American, b. Solingen, Germany, 1830–1902"
+"Albert Carrier-Belleuse, French, b. Anizy-le-Chateau, 1824–1887"
+"Albrecht Dürer, German, b. Nuremberg, 1471–1528"
+"Alexandre Falguiere, French, b. Toulouse, 1831–1900"
+"Alfred Henry Maurer, American, b. New York City, 1868–1932"
+"Antoine-Louis Barye, French, b. Paris, 1795–1875"
+... and so on
+```
+
+#### Inline queries
+
+You can also specify inline queries by passing a `-query` parameter which is a string in the format of:
+
+```
+{PATH}={REGULAR EXPRESSION}
+```
+
+Paths follow the dot notation syntax used by the [tidwall/gjson](https://github.com/tidwall/gjson) package and regular expressions are any valid [Go language regular expression](https://golang.org/pkg/regexp/). Successful path lookups will be treated as a list of candidates and each candidate's string value will be tested against the regular expression's [MatchString](https://golang.org/pkg/regexp/#Regexp.MatchString) method.
+
+For example, all the records whose `author_name` contains the name "Abraham" output as a valid JSON list and sent to the `jq` tool (printing the object title):
+
+```
+$> ./bin/emit \
+	-database-dsn 'sql://sqlite3/usr/local/go-wunderkammer/hmsg.db' \
+	-query 'author_name=(?i)Abraham' \
+	-json \
+
+   | jq '.[]["title"]'
+
+"Untitled (One Of Six Prints) (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Self-Portrait (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Abstraction (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, Gift of Joseph H. Hirshhorn, 1966)"
+"Three Women (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Figure Sketch (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Isadora (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Head Of A Man (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"The City (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Under Two Trees (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"In The Street (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, Gift of Joseph H. Hirshhorn, 1966)"
+"The Road, Paris (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, Gift of Joseph H. Hirshhorn, 1966)"
+"Man And Woman (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"(Untitled) (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Street Scene, Building, Or Portrait (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Park With Figures (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Figure Sketch (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Street Scene, Building, Or Portrait (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Seated Woman (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, Gift of Joseph H. Hirshhorn, 1966)"
+```
+
+The default query mode is to ensure that all queries match but you can also specify that only one or more queries need to match by passing the `-query-mode ANY` flag:
+
+```
+$> ./bin/emit -database-dsn 'sql://sqlite3/usr/local/go-wunderkammer/hmsg.db' \
+	-query 'author_name=(?i)abraham' \
+	-query 'author_name=(?i)mary' \
+	-query-mode ANY \
+	-json \
+
+   | jq '.[]["title"]'
+
+"Untitled (One Of Six Prints) (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Self-Portrait (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Abstraction (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, Gift of Joseph H. Hirshhorn, 1966)"
+"Three Women (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Figure Sketch (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Isadora (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Young Girl Reading (Jeune Fille Lisant) (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Head Of A Man (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"The City (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Under Two Trees (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Woman in Raspberry Costume Holding a Dog (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, Gift of Joseph H. Hirshhorn, 1972)"
+"In The Street (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, Gift of Joseph H. Hirshhorn, 1966)"
+"The Road, Paris (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, Gift of Joseph H. Hirshhorn, 1966)"
+"Man And Woman (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"(Untitled) (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Street Scene, Building, Or Portrait (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Park With Figures (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Figure Sketch (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Street Scene, Building, Or Portrait (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, The Joseph H. Hirshhorn Bequest, 1981)"
+"Baby Charles (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, Gift of the Joseph H. Hirshhorn Foundation, 1966)"
+"Seated Woman (Hirshhorn Museum and Sculpture Garden, Smithsonian Institution, Washington, DC, Gift of Joseph H. Hirshhorn, 1966)"
+```
+
 ### wunderkammer-db
 
 Create a wunderkammer database from a stream of line-separated OEmbed JSON records.
