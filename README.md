@@ -177,8 +177,6 @@ For example, here's how you would create a wunderkammer database from the output
 ```
 $> sqlite3 metmuseum.db < schema/sqlite/oembed.sqlite
 
-# as in: https://github.com/aaronland/go-metmuseum-openaccess#emit
-
 $> /usr/local/go-metmuseum-openaccess/bin/emit \
 	-oembed \
 	-oembed-ensure-images \
@@ -207,6 +205,12 @@ For example: `sql://sqlite3/usr/local/oembed.db`
 #### sql
 
 Index records with any valid Go language `database/sql` driver assuming its been imported by your code. Currently the only default driver that is included is the [mattn/go-sqlite3](https://github.com/mattn/go-sqlite3) `sqlite3` driver.
+
+## Database schemas
+
+### SQLite
+
+* [schema/sqlite/oembed.sqlite](schema/sqlite/oembed.sqlite)
 
 ## See also
 
