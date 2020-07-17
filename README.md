@@ -172,7 +172,7 @@ Usage of ./bin/wunderkammer-db:
     	A valid wunderkammer database DSN string. (default "sql://sqlite3/oembed.db")
 ```
 
-For example:
+For example, here's how you would create a wunderkammer database from the output the [go-metmuseum-openaccess](https://github.com/aaronland/go-metmuseum-openaccess#emit) `emit` tool:
 
 ```
 $> sqlite3 metmuseum.db < schema/sqlite/oembed.sqlite
