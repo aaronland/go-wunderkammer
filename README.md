@@ -39,7 +39,7 @@ Usage of ./bin/emit:
     	Emit to STDOUT (default true)
 ```
 
-For example, here's how you might "emit" a wunderkammer database produced by the `wunderkammer-db` tool described below:
+For example, here's how you might "emit" a wunderkammer database produced by the `wunderkammer-db` (described below) and [go-wunderkammer-image](https://github.com/aaronland/go-wunderkammer-image#append-dataurl) `append-dataurl` tools:
 
 ```
 $> ./bin/emit \
