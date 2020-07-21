@@ -16,7 +16,7 @@ type Photo struct {
 	ProviderName string `json:"provider_name",xml:"provider_name"`
 	ProviderURL  string `json:"provider_url",xml:"provider_url"`
 	ObjectURI    string `json:"object_uri",xml:"object_uri"`
-	DataURL      string `json:"data_url",xml:"data_url",omitempty`
+	DataURL      string `json:"data_url,omitempty",xml:"data_url",omitempty`
 }
 
 // TBD - how to handle (eventually) things that aren't "photos"
