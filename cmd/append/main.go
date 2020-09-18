@@ -68,7 +68,6 @@ func main() {
 	}
 
 	mu := new(sync.RWMutex)
-	wg := new(sync.WaitGroup)
 
 	t0 := time.Now()
 
@@ -101,59 +100,43 @@ func main() {
 			log.Fatalf("Failed to unmarshal OEmbed record, %v", err)
 		}
 
-		t1 := time.Now()
+		u, err := url.Parse(rec.URL)
 
-		<-throttle
-
-		if *timings {
-			log.Printf("Time to wait to process %s, %v\n", rec.URL, time.Since(t1))
+		if err != nil {
+			log.Fatalf("Failed to parse URL %s, %v", rec.URL, err)
 		}
 
-		wg.Add(1)
+		u.Fragment = *fragment
 
-		go func(rec *oembed.Photo) {
+		rec.URL = u.String()
 
-			u, err := url.Parse(rec.URL)
+		body, err = json.Marshal(rec)
 
-			if err != nil {
-				log.Fatalf("Failed to parse URL %s, %v", rec.URL, err)
-			}
+		if err != nil {
+			log.Fatalf("Failed to marshal record, %v", err)
+		}
 
-			u.Fragment = *fragment
+		if *format_json {
+			body = pretty.Pretty(body)
+		}
 
-			rec.URL = u.String()
+		new_count := atomic.AddInt32(&count, 1)
 
-			body, err := json.Marshal(rec)
+		mu.Lock()
 
-			if err != nil {
-				log.Fatalf("Failed to marshal record, %v", err)
-			}
+		if *as_json && new_count > 1 {
+			wr.Write([]byte(","))
+		}
 
-			if *format_json {
-				body = pretty.Pretty(body)
-			}
+		wr.Write(body)
+		wr.Write([]byte("\n"))
 
-			new_count := atomic.AddInt32(&count, 1)
-
-			mu.Lock()
-			defer mu.Unlock()
-
-			if *as_json && new_count > 1 {
-				wr.Write([]byte(","))
-			}
-
-			wr.Write(body)
-			wr.Write([]byte("\n"))
-
-		}(rec)
-
+		mu.Unlock()
 	}
 
 	if *as_json {
 		wr.Write([]byte("]"))
 	}
-
-	wg.Wait()
 
 	if *timings {
 		log.Printf("Time to process %d records, %v\n", count, time.Since(t0))
