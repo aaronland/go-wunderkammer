@@ -43,7 +43,7 @@ $> /usr/local/go-whosonfirst-data/bin/emit \
 	-query 'properties.wof:depicts=1159396315' \
 	-oembed /usr/local/data/sfomuseum-data-media/data/ \
 
-	| bin/append \
+| bin/append \
 	-fragment helloworld \
 	-parameter foo=bar \
 	-json \
