@@ -8,8 +8,82 @@ To build binary versions of these tools run the `cli` Makefile target. For examp
 
 ```
 > make cli
+go build -mod vendor -o bin/append cmd/append/main.go
 go build -mod vendor -o bin/emit cmd/emit/main.go
 go build -mod vendor -o bin/wunderkammer-db cmd/wunderkammer-db/main.go
+```
+
+### append
+
+Append a URL fragment and one or more URL query parameters to the `url` property in a stream of OEmbed records.
+
+```
+> ./bin/append -h
+Usage of ./bin/append:
+  -format
+    	Emit results as formatted JSON.
+  -fragment string
+    	A valid URI fragment to append to an OEmbed URL.
+  -json
+    	Emit results as a JSON array.
+  -null
+    	Emit to /dev/null
+  -parameter value
+    	A valid URI parameter (key=value) to append an OEmbed URL.
+  -stdout
+    	Emit to STDOUT (default true)
+  -timings
+    	Log timings (time to wait to process, time to complete processing
+```
+
+For example when used in concert with the [go-whosonfirst-data emit tool](https://github.com/sfomuseum/go-whosonfirst-data#emit):
+
+```
+$> /usr/local/go-whosonfirst-data/bin/emit \
+	-query 'properties.wof:depicts=1159396315' \
+	-oembed /usr/local/data/sfomuseum-data-media/data/ \
+
+	| bin/append \
+	-fragment helloworld \
+	-parameter foo=bar \
+	-json \
+	-format
+
+{
+  "version": "1.0",
+  "type": "photo",
+  "width": 600,
+  "height": 480,
+  "title": "Installation view of \"Life and Style in the Age of Art Deco\"",
+  "url": "https://millsfield.sfomuseum.org/media/115/934/256/1/1159342561_9poFmxYDofVuY2JXs1q1zazHTBbPf2RtYGTz3h7qU68SlINrbPFT_z.jpg?foo=bar#helloworld",
+  "author_name": "SFO Museum",
+  "author_url": "https://millsfield.sfomuseum.org/id/1159342561",
+  "provider_name": "SFO Museum",
+  "provider_url": "https://millsfield.sfomuseum.org/",
+  "object_uri": "wof://id/1159342561",
+  "thumbnail_url": "https://millsfield.sfomuseum.org/media/115/934/256/1/1159342561_9poFmxYDofVuY2JXs1q1zazHTBbPf2RtYGTz3h7qU68SlINrbPFT_n.jpg",
+  "thumbnail_width": 300,
+  "thumbnail_height": 240
+}
+
+,{
+  "version": "1.0",
+  "type": "photo",
+  "width": 599,
+  "height": 480,
+  "title": "Installation view of \"Life and Style in the Age of Art Deco\"",
+  "url": "https://millsfield.sfomuseum.org/media/115/934/256/3/1159342563_sSMmHlVZSYrrbOANDefwzWD1VFsNZNrukSVMcBkCRI54VuT0ELDI_z.jpg?foo=bar#helloworld",
+  "author_name": "SFO Museum",
+  "author_url": "https://millsfield.sfomuseum.org/id/1159342563",
+  "provider_name": "SFO Museum",
+  "provider_url": "https://millsfield.sfomuseum.org/",
+  "object_uri": "wof://id/1159342563",
+  "thumbnail_url": "https://millsfield.sfomuseum.org/media/115/934/256/3/1159342563_sSMmHlVZSYrrbOANDefwzWD1VFsNZNrukSVMcBkCRI54VuT0ELDI_n.jpg",
+  "thumbnail_width": 299,
+  "thumbnail_height": 240
+}
+
+... and so on
 ```
 
 ### append-dataurl

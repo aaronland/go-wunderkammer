@@ -7,13 +7,13 @@ import (
 	"encoding/json"
 	"flag"
 	"github.com/aaronland/go-wunderkammer/oembed"
+	"github.com/sfomuseum/go-flags/multi"	
 	"github.com/tidwall/pretty"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/url"
 	"os"
-	"runtime"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -27,12 +27,12 @@ func main() {
 	to_stdout := flag.Bool("stdout", true, "Emit to STDOUT")
 	to_devnull := flag.Bool("null", false, "Emit to /dev/null")
 
-	workers := flag.Int("workers", runtime.NumCPU(), "The number of concurrent workers to append data URLs with")
 	timings := flag.Bool("timings", false, "Log timings (time to wait to process, time to complete processing")
 
 	fragment := flag.String("fragment", "", "A valid URI fragment to append to an OEmbed URL.")
 
-	// handle URL parameters here...
+	var parameters multi.KeyValue
+	flag.Var(&parameters, "parameter", "A valid URI parameter (key=value) to append an OEmbed URL.")
 
 	flag.Parse()
 
@@ -60,12 +60,6 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 
 	count := int32(0)
-
-	throttle := make(chan bool, *workers)
-
-	for i := 0; i < *workers; i++ {
-		throttle <- true
-	}
 
 	mu := new(sync.RWMutex)
 
@@ -108,6 +102,17 @@ func main() {
 
 		u.Fragment = *fragment
 
+		if len(parameters) > 0 {
+
+			q := u.Query()
+
+			for _, param := range parameters {
+				q.Set(param.Key, param.Value)
+			}
+
+			u.RawQuery = q.Encode()
+		}
+		
 		rec.URL = u.String()
 
 		body, err = json.Marshal(rec)
